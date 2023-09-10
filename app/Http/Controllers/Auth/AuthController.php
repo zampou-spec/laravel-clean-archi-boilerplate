@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 
 class AuthController extends Controller
@@ -12,15 +13,15 @@ class AuthController extends Controller
         $this->middleware('auth:api', ['except' => ['login']]);
     }
 
-    public function user()
+    public function user(): JsonResponse
     {
         return response()->json(auth()->user());
     }
 
-    public function login(Request $request)
+    public function login(Request $request): JsonResponse
     {
         if ($request->mode === 'email') {
-            $credentials = ['email' => $request->id];
+            $credentials = ['email' => $request->id ];
         } else {
             $credentials = ['mobile_number' => $request->id];
         }
@@ -34,18 +35,18 @@ class AuthController extends Controller
         return $this->respondWithToken($token);
     }
 
-    public function logout()
+    public function logout(): JsonResponse
     {
         auth()->logout();
         return response()->json(['message' => 'Successfully logged out']);
     }
 
-    public function refresh()
+    public function refresh(): JsonResponse
     {
         return $this->respondWithToken(auth()->refresh());
     }
 
-    protected function respondWithToken($token)
+    protected function respondWithToken($token): JsonResponse
     {
         $user = auth()->user()->toArray();
 
