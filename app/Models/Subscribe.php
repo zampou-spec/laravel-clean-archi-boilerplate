@@ -12,9 +12,9 @@ class Subscribe extends Model
 
     protected $fillable = [
         'sold',
-        'subscribe_type',
         'user_id',
         'course_id',
+        'subscribe_type',
     ];
 
     public function user(): BelongsTo

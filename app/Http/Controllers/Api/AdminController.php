@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\News;
 use App\Models\User;
-use App\Models\Subscribe;
 use App\Models\Course;
 use App\Models\Chapter;
 use Illuminate\Support\Str;
@@ -12,6 +12,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
 use Alaouy\Youtube\Facades\Youtube;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Contracts\Auth\Authenticatable;
 
 class AdminController extends Controller
 {
@@ -23,6 +25,16 @@ class AdminController extends Controller
     public function __construct()
     {
         $this->middleware('auth:api');
+    }
+
+    /**
+     * get Auth User
+     *
+     * @return Authenticatable
+     */
+    private function getAuthUser(): Authenticatable
+    {
+        return Auth::user();
     }
 
     /**
@@ -69,7 +81,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Reduce sold for the classroom courses
+     * Remove sold for the classroom courses
      *
      * @return JsonResponse
      */
@@ -89,6 +101,26 @@ class AdminController extends Controller
         }
 
         return response()->json();
+    }
+
+    /**
+     * Get Chapter by Course
+     *
+     * @return Collection
+     */
+    public function getCourseChapters(Course $course): Collection
+    {
+        return $course->chapters;
+    }
+
+    /**
+     * Get Course
+     *
+     * @return Course
+     */
+    public function getCourse(Course $course): Course
+    {
+        return $course;
     }
 
     /**
@@ -179,7 +211,6 @@ class AdminController extends Controller
         return Chapter::all();
     }
 
-
     /**
      * Edit Chapter
      *
@@ -231,13 +262,18 @@ class AdminController extends Controller
      *
      * @return array | JsonResponse
      */
-    public function getCourseVideos(Course $course, User $user): array | JsonResponse
+    public function getCourseVideos(Course $course): array | JsonResponse
     {
+        $user = (object) $this->getAuthUser();
+
         $chapters = [
             'infos' => [
+                'lock' => true,
                 'id' => $course->id,
                 'title' => $course->name,
-                'lock' => true,
+                'image' => $course->image,
+                'description' => $course->description,
+                'price_online' => $course->price_online
             ],
             'chapters' => []
         ];
@@ -266,6 +302,30 @@ class AdminController extends Controller
 
         return $chapters;
     }
+
+    // -------------------------------------------------------------------------------------------
+
+    public function createNew(Request $request)
+    {
+        $newsData = $request->all();
+        $image = $this->uploadFile($request);
+
+        if ($image) {
+            $isCreate = News::create([
+                ...$newsData,
+                'image' => $image
+            ]);
+        }
+
+        if ($isCreate)
+            return response()->json();
+
+        return response()->json([], 400);
+    }
+
+    // -------------------------------------------------------------------------------------------
+
+
 
     /**
      * Static upload File
@@ -298,8 +358,8 @@ class AdminController extends Controller
             if ($youtubes['results']) {
                 foreach ($youtubes['results'] as $youtube) {
                     $videos[] = [
-                        'id' => str::random(10),
                         'lock' => $lock,
+                        'id' => str::random(10),
                         'title' => $youtube->snippet->title,
                         'image' =>  $youtube->snippet->thumbnails->maxres->url,
                         'video_url' => $lock ? null : 'https://youtu.be/'.$youtube->snippet->resourceId->videoId

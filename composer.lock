@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0e8475aa0e9717f32e39af4ccc497329",
+    "content-hash": "cd618c67781840f4419911bbc9690598",
     "packages": [
         {
             "name": "alaouy/youtube",
@@ -5893,6 +5893,61 @@
                 "source": "https://github.com/webmozarts/assert/tree/1.11.0"
             },
             "time": "2022-06-03T18:03:27+00:00"
+        },
+        {
+            "name": "zampou/cinetpay",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/zampou-spec/cinetpay.git",
+                "reference": "c430b1a2e0eae3a96c2d815ad5c7b9e59561d1a5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/zampou-spec/cinetpay/zipball/c430b1a2e0eae3a96c2d815ad5c7b9e59561d1a5",
+                "reference": "c430b1a2e0eae3a96c2d815ad5c7b9e59561d1a5",
+                "shasum": ""
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Zampou\\CinetPay\\Providers\\CinetPayProvider"
+                    ],
+                    "aliases": {
+                        "CinetPay": "Zampou\\CinetPay\\Facades\\CinetPay"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Zampou\\CinetPay\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Zampou Ibrahim",
+                    "email": "zampou.ibrahim59@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "CinetPay laravel package",
+            "keywords": [
+                "cinetpay",
+                "integration",
+                "laravel",
+                "mobile",
+                "money"
+            ],
+            "support": {
+                "issues": "https://github.com/zampou-spec/cinetpay/issues",
+                "source": "https://github.com/zampou-spec/cinetpay/tree/1.0.0"
+            },
+            "time": "2022-12-20T08:16:38+00:00"
         }
     ],
     "packages-dev": [
