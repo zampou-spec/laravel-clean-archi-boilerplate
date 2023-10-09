@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Models\News;
 use App\Models\User;
 use App\Models\Course;
+use App\Models\Product;
 use App\Models\Chapter;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -44,7 +45,7 @@ class AdminController extends Controller
      */
     public function getAllUser(): Collection
     {
-        return User::all()->map(function ($user) {
+        return User::orderBy('created_at', 'desc')->get()->map(function ($user) {
             return [
                 'id' => "$user->id",
                 'name' => "$user->first_name $user->last_name",
@@ -130,7 +131,7 @@ class AdminController extends Controller
      */
     public function getAllCourses(): Collection
     {
-        return Course::all();
+        return Course::orderBy('created_at', 'desc')->get();
     }
 
     /**
@@ -208,7 +209,7 @@ class AdminController extends Controller
      */
     public function getAllChapters(): Collection
     {
-        return Chapter::all();
+        return Chapter::orderBy('created_at', 'desc')->get();
     }
 
     /**
@@ -303,9 +304,12 @@ class AdminController extends Controller
         return $chapters;
     }
 
-    // -------------------------------------------------------------------------------------------
-
-    public function createNew(Request $request)
+    /**
+     * Create News
+     *
+     * @return JsonResponse
+     */
+    public function createNews(Request $request): JsonResponse
     {
         $newsData = $request->all();
         $image = $this->uploadFile($request);
@@ -323,9 +327,98 @@ class AdminController extends Controller
         return response()->json([], 400);
     }
 
-    // -------------------------------------------------------------------------------------------
+    /**
+     * Update News
+     *
+     * @return JsonResponse
+     */
+    public function editNews(Request $request, News $news): JsonResponse
+    {
+        $newsData = $request->all();
+        $image = $this->uploadFile($request);
 
+        if ($image) {
+            $isUpdate  = $news->update([
+                ...$newsData,
+                'image' => $image,
+            ]);
+        } else {
+            $isUpdate  = $news->update($newsData);
+        }
 
+        if ($isUpdate)
+            return response()->json();
+
+        return response()->json([], 400);
+    }
+
+    /**
+     * Delete News
+     *
+     * @return bool
+     */
+    public function deleteNews(Product $product): bool
+    {
+        return $product->delete();
+    }
+
+    /**
+     * Create Product
+     *
+     * @return JsonResponse
+     */
+    public function createProduct(Request $request): JsonResponse
+    {
+        $productData = $request->all();
+        $image = $this->uploadFile($request);
+
+        if ($image) {
+            $isCreate = Product::create([
+                ...$productData,
+                'image' => $image
+            ]);
+        }
+
+        if ($isCreate)
+            return response()->json();
+
+        return response()->json([], 400);
+    }
+
+    /**
+     * Update Product
+     *
+     * @return JsonResponse
+     */
+    public function editProduct(Request $request, Product $product): JsonResponse
+    {
+        $productData = $request->all();
+        $image = $this->uploadFile($request);
+
+        if ($image) {
+            $isUpdate  = $product->update([
+                ...$productData,
+                'image' => $image,
+            ]);
+        } else {
+            $isUpdate  = $product->update($productData);
+        }
+
+        if ($isUpdate)
+            return response()->json();
+
+        return response()->json([], 400);
+    }
+
+    /**
+     * Delete Product
+     *
+     * @return bool
+     */
+    public function deleteProduct(Product $product): bool
+    {
+        return $product->delete();
+    }
 
     /**
      * Static upload File
@@ -372,5 +465,4 @@ class AdminController extends Controller
 
         return $videos;
     }
-
 }

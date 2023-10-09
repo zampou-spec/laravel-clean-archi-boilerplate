@@ -12,19 +12,31 @@ class User extends Authenticatable implements JWTSubject
     use Notifiable;
 
     protected $fillable = [
-        'first_name',
-        'last_name',
+        'role',
         'email',
+        'country',
         'password',
+        'password',
+        'last_name',
+        'first_name',
         'mobile_number',
         'email_verified_at',
-        'password',
-        'role',
     ];
 
     protected $casts = [
         'password' => 'hashed',
         'email_verified_at' => 'datetime',
+    ];
+
+    static $validationRules = [
+        'register' => [
+            'country' => 'required|string',
+            'password' => 'required|confirmed',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users',
+            'first_name' => 'required|string|max:255',
+            'mobile_number' => 'required|string|unique:users'
+        ]
     ];
 
     public function getJWTIdentifier()

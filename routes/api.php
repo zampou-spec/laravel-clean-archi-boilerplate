@@ -7,8 +7,10 @@ use App\Http\Controllers\Api\AnyOneController;
 
 Route::controller(AnyOneController::class)
     ->group(function () {
-        Route::get('/get-new/{new}', 'getNew');
+        Route::get('/get-news/{news}', 'getNews');
         Route::get('/get-all-news', 'getAllNews');
+        Route::get('/get-all-courses', 'getAllCourses');
+        Route::get('/get-all-products', 'getAllProducts');
     });
 
 Route::controller(UserController::class)
@@ -28,7 +30,6 @@ Route::controller(AdminController::class)
         // Courses
         Route::post('/create-course', 'createCourse');
         Route::get('/get-course/{course}', 'getCourse');
-        Route::get('/get-all-courses', 'getAllCourses');
         Route::post('/edit-course/{course}', 'editCourse');
         Route::post('/delete-course/{course}', 'deleteCourse');
         Route::get('/get-course-videos/{course}', 'getCourseVideos');
@@ -39,6 +40,16 @@ Route::controller(AdminController::class)
         Route::post('/edit-chapter/{chapter}', 'editChapter');
         Route::post('/delete-chapter/{chapter}', 'deleteChapter');
         Route::get('/get-course-chapters/{course}', 'getCourseChapters');
+
+        // News
+        Route::post('/create-news', 'createNews');
+        Route::post('/edit-news/{news}', 'editNews');
+        Route::post('/delete-news/{news}', 'deleteNews');
+
+        // Products
+        Route::post('/create-product', 'createProduct');
+        Route::post('/edit-product/{product}', 'editProduct');
+        Route::post('/delete-product/{product}', 'deleteProduct');
     });
 
 require __DIR__ . '/auth.php';

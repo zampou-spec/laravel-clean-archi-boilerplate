@@ -44,6 +44,7 @@ class UserController extends Controller
 
         return $user->subscribes()
             ->where('subscribe_type', 'classroom')
+            ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($subscribe) {
                 return [
@@ -63,7 +64,7 @@ class UserController extends Controller
     {
         $user = (object) $this->getAuthUser();
 
-        return Course::all()->map(function ($course) use ($user) {
+        return Course::orderBy('created_at', 'desc')->get()->map(function ($course) use ($user) {
             if ($user->role == 'admin') {
                 $lock = false;
             } else if ($user->role == 'user') {
