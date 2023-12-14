@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\User;
 use App\Models\Course;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
 use App\Http\Controllers\Controller;
@@ -24,13 +26,38 @@ class UserController extends Controller
     }
 
     /**
-     * get Auth User
+     * Get Auth User
      *
      * @return Authenticatable
      */
     private function getAuthUser(): Authenticatable
     {
         return Auth::user();
+    }
+
+    /**
+     * Edit User
+     *
+     * @return JsonResponse
+     */
+    public function editUser(Request $request, User $user): JsonResponse
+    {
+        $userData = $request->all();
+        $image = $this->uploadFile($request);
+
+        if ($image) {
+            $isUpdate = $user->update([
+                ...$userData,
+                'image' => $image,
+            ]);
+        } else {
+            $isUpdate = $user->update($userData);
+        }
+
+        if ($isUpdate)
+            return response()->json(User::find($userData['id']));
+
+        return response()->json([], 400);
     }
 
     /**
@@ -64,7 +91,7 @@ class UserController extends Controller
     {
         $user = (object) $this->getAuthUser();
 
-        return Course::orderBy('created_at', 'desc')->get()->map(function ($course) use ($user) {
+        return Course::orderBy('rank', 'asc')->get()->map(function ($course) use ($user) {
             if ($user->role == 'admin') {
                 $lock = false;
             } else if ($user->role == 'user') {
@@ -85,6 +112,24 @@ class UserController extends Controller
     }
 
     /**
+     * Static upload File
+     *
+     * @return bool | string
+     */
+    protected function uploadFile($request): bool | string
+    {
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->storeAs('uploads', $imageName, 'public');
+            $imageLink = asset('storage/uploads/' . $imageName);
+            return $imageLink;
+        }
+
+        return false;
+    }
+
+    /**
      * Make Payment
      *
      * @return JsonResponse
@@ -100,7 +145,7 @@ class UserController extends Controller
             'customer_name' => $user->first_name,
             'customer_surname' => $user->last_name,
             'description' => 'Paiement de course de danse',
-            'return_url' => env('FRONTEND_URL').'/dashboard',
+            'return_url' => env('FRONTEND_URL') . '/dashboard',
             'metadata' => "{$user->id}-{$course->id}-{$subscribe_type}",
             'amount' => $subscribe_type === 'classroom' ? $course->price_classroom :  $course->price_online
         ]);

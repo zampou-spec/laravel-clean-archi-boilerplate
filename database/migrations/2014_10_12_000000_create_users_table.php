@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('first_name');
             $table->string('last_name');
             $table->string('country');
+            $table->string('image')->default('https://placehold.co/400');
             $table->string('email')->unique();
             $table->string('mobile_number')->unique();
             $table->enum('role', ['admin', 'user'])->default('user');

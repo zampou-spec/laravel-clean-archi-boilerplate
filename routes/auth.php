@@ -11,4 +11,6 @@ Route::controller(AuthController::class)
     Route::post('logout', 'logout');
     Route::post('refresh', 'refresh');
     Route::post('register', 'register');
+    Route::post('forgot-password', 'forgotPassword');
+    Route::post('reset-password', 'resetPassword');
   });

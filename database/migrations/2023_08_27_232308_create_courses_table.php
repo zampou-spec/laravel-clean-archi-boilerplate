@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('image');
+            $table->integer('rank')->nullable();
             $table->double('price_online');
             $table->double('price_classroom');
             $table->text('description');

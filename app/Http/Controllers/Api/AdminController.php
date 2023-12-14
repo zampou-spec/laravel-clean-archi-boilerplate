@@ -97,7 +97,7 @@ class AdminController extends Controller
 
         if ($subscribe and $subscribe->sold > 0) {
             $subscribe->update([
-                'sold' => $subscribe ->sold - 1,
+                'sold' => $subscribe->sold - 1,
             ]);
         }
 
@@ -131,7 +131,7 @@ class AdminController extends Controller
      */
     public function getAllCourses(): Collection
     {
-        return Course::orderBy('created_at', 'desc')->get();
+        return Course::orderBy('rank', 'asc')->get();
     }
 
     /**
@@ -193,7 +193,7 @@ class AdminController extends Controller
         $segment = explode('/', $imageUrl['path']);
 
         $imageName = end($segment);
-        $storagePath  = storage_path('app/public/uploads/'.$imageName);
+        $storagePath  = storage_path('app/public/uploads/' . $imageName);
 
         if (file_exists($storagePath)) {
             unlink($storagePath);
@@ -396,12 +396,12 @@ class AdminController extends Controller
         $image = $this->uploadFile($request);
 
         if ($image) {
-            $isUpdate  = $product->update([
+            $isUpdate = $product->update([
                 ...$productData,
                 'image' => $image,
             ]);
         } else {
-            $isUpdate  = $product->update($productData);
+            $isUpdate = $product->update($productData);
         }
 
         if ($isUpdate)
@@ -425,7 +425,7 @@ class AdminController extends Controller
      *
      * @return bool | string
      */
-    protected function uploadFile ($request): bool | string
+    protected function uploadFile($request): bool | string
     {
         if ($request->hasFile('image')) {
             $image = $request->file('image');
@@ -443,19 +443,22 @@ class AdminController extends Controller
      *
      * @return array | bool
      */
-    protected function getPlaylistItemsByPlaylistId($id, $lock = false): array | bool
+    protected function getPlaylistItemsByPlaylistId($id, $lock = false) //: array | bool
     {
+
         try {
             $youtubes = Youtube::getPlaylistItemsByPlaylistId($id);
 
             if ($youtubes['results']) {
                 foreach ($youtubes['results'] as $youtube) {
+                    $image =
+                        $youtube->snippet->thumbnails->maxres->url ?? $youtube->snippet->thumbnails->high->url ?? $youtube->snippet->thumbnails->default->url;
                     $videos[] = [
                         'lock' => $lock,
-                        'id' => str::random(10),
+                        'id' => Str::random(10),
                         'title' => $youtube->snippet->title,
-                        'image' =>  $youtube->snippet->thumbnails->maxres->url,
-                        'video_url' => $lock ? null : 'https://youtu.be/'.$youtube->snippet->resourceId->videoId
+                        'image' => $image,
+                        'video_url' => $lock ? null : 'https://youtu.be/' . $youtube->snippet->resourceId->videoId
                     ];
                 }
             }

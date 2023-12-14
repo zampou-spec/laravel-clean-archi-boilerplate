@@ -11,10 +11,12 @@ Route::controller(AnyOneController::class)
         Route::get('/get-all-news', 'getAllNews');
         Route::get('/get-all-courses', 'getAllCourses');
         Route::get('/get-all-products', 'getAllProducts');
+        Route::post('/order-product/{product}', 'orderProduct');
     });
 
 Route::controller(UserController::class)
     ->group(function () {
+        Route::post('/edit-user/{user}', 'editUser');
         Route::get('/get-subscribes', 'getSubscribes');
         Route::get('/get-subscribe-courses', 'getSubscribeCourses');
         Route::post('/make-payment/{course}/{subscribe_type}', 'makePayment');
